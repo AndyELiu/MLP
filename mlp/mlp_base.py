@@ -4,15 +4,19 @@ import math
 
 
 class MLPBase(ABC):
-    def __init__(self, network_shape, activation='relu', learning_rate=0.001):
+    def __init__(self, network_shape, activation='relu', learning_rate=0.001,
+                 optimizer='GradientDescent'):
+        assert activation in ('tanh', 'sigmoid', 'relu', 'relu6')
+        assert optimizer in ('GradientDescent', 'AdaDelta', 'AdaGrad',
+                             'Adam', 'RMSProp')
         self.network_shape = network_shape
         self.activation = activation
+        self.optimizer = optimizer
         self.learning_rate = learning_rate
         self.x, self.y, self.logits, self.loss = (None,) * 4
         self.precision, self.prediction = (None,) * 2
         self.sess = tf.Session()
 
-        assert self.activation in ('tanh', 'sigmoid', 'relu', 'crelu')
         self._build_network()
 
     def _build_network(self):
@@ -52,6 +56,8 @@ class MLPBase(ABC):
                 outputs = tf.nn.sigmoid(outputs)
             elif self.activation == 'relu':
                 outputs = tf.nn.relu(outputs)
+            elif self.activation == 'relu6':
+                outputs = tf.nn.relu6(outputs)
             else:
                 raise Exception('invalid activation!')
 
@@ -62,7 +68,16 @@ class MLPBase(ABC):
         pass
 
     def _build_train_op(self):
-        optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+        if self.optimizer == 'GradientDescent':
+            optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+        elif self.optimizer == 'AdaDelta':
+            optimizer = tf.train.AdadeltaOptimizer(self.learning_rate)
+        elif self.optimizer == 'AdaGrid':
+            optimizer = tf.train.AdagridOptimizer(self.learning_rate)
+        elif self.optimizer == 'Adam':
+            optimizer = tf.train.AdamOptimizer(self.learning_rate)
+        else:
+            optimizer = tf.train.RMSPropOptimizer(self.learning_rate)
         self.train_op = optimizer.minimize(self.loss)
 
     @abstractmethod
