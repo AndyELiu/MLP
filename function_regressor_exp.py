@@ -7,8 +7,6 @@ import numpy as np
 
 from mlp import MLPRegressor
 
-tf.logging.set_verbosity(tf.logging.INFO)
-
 # Data sets
 N = 100
 alpha = 0.8
@@ -34,19 +32,13 @@ z_train = zzc_train[:, 2:]
 x_test = zzc_test[:, :2]
 z_test = zzc_test[:, 2:]
 
-regressor = MLPRegressor([2, 10, 10, 1], 'relu', learning_rate=0.001, optimizer='Adam')
+# Create regressor
+regressor = MLPRegressor([2, 10, 10, 1], 'relu', learning_rate=0.001,
+                         optimizer='Adam')
 
-print(np.sum(x_train))
-print(np.sum(z_train))
+# Fitting
 regressor.fit(x=x_train, y=z_train, steps=100000)
 
+# Evaluation
 l2_error = regressor.eval(x=x_test, y=z_test)
 print('l2 error: {}'.format(l2_error))
-
-#accuracy_score = classifier.eval(x=test_set.data, y=test_set.target)
-#print('Accuracy: {}'.format(accuracy_score))
-
-#new_samples = np.array(
-#    [[6.4, 3.2, 4.5, 1.5], [5.8, 3.1, 5.0, 1.7]], dtype=float)
-#y = classifier.predict(new_samples)
-#print('Predictions: {}'.format(str(y)))

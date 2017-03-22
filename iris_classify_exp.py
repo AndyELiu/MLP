@@ -7,8 +7,6 @@ import numpy as np
 
 from mlp import MLPClassifier
 
-tf.logging.set_verbosity(tf.logging.INFO)
-
 # Data sets
 IRIS_TRAINING = "data/iris_training.csv"
 IRIS_TEST = "data/iris_test.csv"
@@ -26,10 +24,13 @@ test_set = tf.contrib.learn.datasets.base.load_csv_with_header(
                                features_dtype=np.float32
                                )
 
+# Create classifier
 classifier = MLPClassifier([4, 10, 10, 3], 'relu')
 
+# Fitting
 classifier.fit(x=training_set.data, y=training_set.target)
 
+# Evaluation
 accuracy_score = classifier.eval(x=test_set.data, y=test_set.target)
 print('Accuracy: {}'.format(accuracy_score))
 
